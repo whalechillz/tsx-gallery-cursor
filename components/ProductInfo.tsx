@@ -24,7 +24,7 @@ type Props = {
   schedules: Schedule[];
 };
 
-const ProductInfo: React.FC<Props> = ({ tour, schedules }) => {
+const SchedulePreview: React.FC<Props> = ({ tour, schedules }) => {
   return (
     <div className="">
       <h1 className="text-2xl font-bold mb-2">{tour.title}</h1>
@@ -49,4 +49,4 @@ const ProductInfo: React.FC<Props> = ({ tour, schedules }) => {
   );
 };
 
-export default ProductInfo; 
+export default SchedulePreview; 

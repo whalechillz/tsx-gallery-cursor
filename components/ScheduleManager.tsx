@@ -24,10 +24,10 @@ type ScheduleForm = {
 
 const initialForm: ScheduleForm = { date: "", title: "", description: "", meal_breakfast: false, meal_lunch: false, meal_dinner: false };
 
-type Props = { tourId: string };
+type Props = { tour: any; schedules: Schedule[] };
 
-const ScheduleManager: React.FC<Props> = ({ tourId }) => {
-  const [schedules, setSchedules] = useState<Schedule[]>([]);
+const ScheduleManager: React.FC<Props> = ({ tour, schedules }) => {
+  const [schedulesState, setSchedulesState] = useState<Schedule[]>(schedules);
   const [form, setForm] = useState<ScheduleForm>(initialForm);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -36,15 +36,15 @@ const ScheduleManager: React.FC<Props> = ({ tourId }) => {
   const fetchSchedules = async () => {
     setLoading(true);
     setError("");
-    const { data, error } = await supabase.from("singsing_schedules").select("*").eq("tour_id", tourId).order("date", { ascending: true });
+    const { data, error } = await supabase.from("singsing_schedules").select("*").eq("tour_id", tour.id).order("date", { ascending: true });
     if (error) setError(error.message);
-    else setSchedules((data || []) as Schedule[]);
+    else setSchedulesState((data || []) as Schedule[]);
     setLoading(false);
   };
 
   useEffect(() => {
-    if (tourId) fetchSchedules();
-  }, [tourId]);
+    if (tour.id) fetchSchedules();
+  }, [tour.id]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -67,7 +67,7 @@ const ScheduleManager: React.FC<Props> = ({ tourId }) => {
         fetchSchedules();
       }
     } else {
-      const { error } = await supabase.from("singsing_schedules").insert([{ ...form, tour_id: tourId }]);
+      const { error } = await supabase.from("singsing_schedules").insert([{ ...form, tour_id: tour.id }]);
       if (error) setError(error.message);
       else {
         setForm(initialForm);
@@ -131,7 +131,7 @@ const ScheduleManager: React.FC<Props> = ({ tourId }) => {
             </tr>
           </thead>
           <tbody>
-            {schedules.map((s) => (
+            {schedulesState.map((s) => (
               <tr key={s.id} className="border-t border-gray-200 dark:border-gray-700">
                 <td className="py-1 px-2">{s.date}</td>
                 <td className="py-1 px-2">{s.title}</td>
